@@ -1,0 +1,66 @@
+{
+  "level": 3,
+  "size": 3,
+  "cells": [
+    [
+      {
+        "targetRow": 0,
+        "steps": 1,
+        "col": 0,
+        "row": 0
+      },
+      {
+        "targetRow": 0,
+        "steps": 2,
+        "col": 1,
+        "row": 0
+      },
+      {
+        "targetRow": 2,
+        "steps": 2,
+        "col": 2,
+        "row": 0
+      }
+    ],
+    [
+      {
+        "targetRow": 1,
+        "steps": 1,
+        "col": 0,
+        "row": 1
+      },
+      {
+        "targetRow": 1,
+        "steps": 2,
+        "col": 1,
+        "row": 1
+      },
+      {
+        "targetRow": 1,
+        "steps": 1,
+        "col": 2,
+        "row": 1
+      }
+    ],
+    [
+      {
+        "targetRow": 2,
+        "steps": 1,
+        "col": 0,
+        "row": 2
+      },
+      {
+        "targetRow": 0,
+        "steps": 1,
+        "col": 1,
+        "row": 2
+      },
+      {
+        "targetRow": 2,
+        "steps": 1,
+        "col": 2,
+        "row": 2
+      }
+    ]
+  ]
+}
