@@ -1,13 +1,53 @@
 # Harmony Server
-A GraphQL and Go server for the harmony game using `graphql-go/graphql`
+A GraphQL + Go + Serverless backend for the harmony game using `graphql-go/graphql`
+
+## Project Establishment Steps
+1. prerequisite: `go`, `dep`, `serverless`, `aws-account`
+2. create project directory under `$gopath/src`
+3. create serverless project with `aws-go-dep` template
+```
+serverless create -t aws-go-dep -p harmony-server
+```
+4. build project
+```
+make
+```
+5. configure aws credential access key and secrete
+6. deploy
+```
+serverless deploy
+```
 
 ## Development Environment
-install dependencies into local `$GOPATH`
+install dependencies
 ```
-go get
+dep ensure
 ```
 
-run the sever in localhost `:8080`
+## Deploy
+deploy the entire package
 ```
-go run .
+sls deploy
+```
+
+deploy a single function(e.g. handler)
+```
+sls deploy -f handler
+```
+
+# Test Query
+graphql query:
+```
+query {
+  level(id: 1) {
+    size
+    colors
+    cells{
+      targetRow
+      steps
+      row
+      col
+    }            
+  }
+}
 ```

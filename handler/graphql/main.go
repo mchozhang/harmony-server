@@ -1,11 +1,16 @@
 /**
- * define the graphql schema including model and query
+ * wrapper of graphql query and mutation executor and extractor,
+ * define the graphql objects
  */
-package main
+package graphql
 
-import "github.com/graphql-go/graphql"
+import (
+	"fmt"
+	"github.com/graphql-go/graphql"
+	"harmony-server/handler/dynamodb"
+)
 
-// cell schema
+// cell graphql
 var cellType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Cell",
@@ -25,7 +30,7 @@ var cellType = graphql.NewObject(
 		},
 	})
 
-// level schema
+// Level graphql
 var levelType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Level",
@@ -59,9 +64,10 @@ var queryType = graphql.NewObject(
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					idQuery, isOk := p.Args["id"].(int)
+					levelId, isOk := p.Args["id"].(int)
+
 					if isOk {
-						return data[idQuery], nil
+						return dynamodb.GetLevel(levelId)
 					}
 					return nil, nil
 				},
@@ -70,8 +76,26 @@ var queryType = graphql.NewObject(
 	},
 )
 
+// GraphQL root graphql
 var schema, _ = graphql.NewSchema(
 	graphql.SchemaConfig{
 		Query: queryType,
 	},
 )
+
+/**
+ * execute the graphql query
+ */
+func ExecuteQuery(query string, variables map[string]interface{}, operationName string) *graphql.Result {
+	// parse the quest body to acquire query parameters
+	result := graphql.Do(graphql.Params{
+		Schema:         schema,
+		VariableValues: variables,
+		RequestString:  query,
+		OperationName:  operationName,
+	})
+	if len(result.Errors) > 0 {
+		fmt.Printf("Error: %v\n", result.Errors)
+	}
+	return result
+}
