@@ -28,18 +28,23 @@ dep ensure
 ```
 
 ## Deploy
+build the executable
+```
+make
+```
+
 deploy the entire package
 ```
 sls deploy
 ```
 
-deploy a single function(e.g. handler)
+or deploy a single function(e.g. handler) when only the function has changed
 ```
 sls deploy -f handler
 ```
 
 # Test Query
-graphql query:
+graphql query sample(get game data of level 1)
 ```
 query {
   level(id: 1) {
@@ -54,3 +59,4 @@ query {
   }
 }
 ```
+
