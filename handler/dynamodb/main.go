@@ -57,3 +57,30 @@ func GetLevel(levelId int) (interface{}, error) {
 	}
 	return level, nil
 }
+
+/**
+	create a new game level to the database
+ */
+func CreateLevel(levelInput interface{}) (interface{}, error) {
+	av, err := dynamodbattribute.MarshalMap(levelInput)
+	if err != nil {
+		fmt.Println("Got error marshalling map:")
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	input := &dynamodb.PutItemInput{
+		Item: av,
+		TableName: aws.String(os.Getenv("TABLE_NAME")),
+	}
+
+	result, err := svc.PutItem(input)
+	if err != nil {
+		fmt.Println("Got error calling PutItem:")
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	level := &Level{}
+	err = dynamodbattribute.UnmarshalMap(result.Attributes, &level)
+	return level, err
+}

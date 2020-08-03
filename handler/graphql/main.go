@@ -51,6 +51,44 @@ var levelType = graphql.NewObject(
 		},
 	})
 
+var cellInputType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "CellInput",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"targetRow": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			"steps": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			"row": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			"col": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+		},
+	})
+
+var levelInputType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "LevelInput",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"level": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			"size": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			"colors": &graphql.InputObjectFieldConfig{
+				Type: graphql.NewList(graphql.String),
+			},
+			"cells": &graphql.InputObjectFieldConfig{
+				Type: graphql.NewList(graphql.NewList(cellInputType)),
+			},
+		},
+	})
+
 // query
 var queryType = graphql.NewObject(
 	graphql.ObjectConfig{
@@ -76,10 +114,35 @@ var queryType = graphql.NewObject(
 	},
 )
 
+// mutation type
+var mutationType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Mutation",
+	Fields: graphql.Fields{
+		"createLevel": &graphql.Field{
+			Type: levelType,
+			Args: graphql.FieldConfigArgument{
+				"input": &graphql.ArgumentConfig{
+					Type: levelInputType,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				levelInput, isOk := p.Args["input"]
+				if isOk {
+					return dynamodb.CreateLevel(levelInput)
+				}
+				return nil, nil
+			},
+		},
+	},
+},
+
+)
+
 // GraphQL root graphql
 var schema, _ = graphql.NewSchema(
 	graphql.SchemaConfig{
 		Query: queryType,
+		Mutation: mutationType,
 	},
 )
 

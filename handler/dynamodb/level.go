@@ -5,7 +5,7 @@ package dynamodb
 
 // Level graphql
 type Level struct {
-	ID     string   `json:"id,omitempty"`
+	Level     string   `json:"level,omitempty"`
 	Size   int      `json:"size,omitempty"`
 	Colors []string `json:"colors,omitempty"`
 	Cells  [][]struct {
