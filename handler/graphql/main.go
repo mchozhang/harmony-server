@@ -94,6 +94,7 @@ var queryType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Query",
 		Fields: graphql.Fields{
+			// query the game level data
 			"level": &graphql.Field{
 				Type: levelType,
 				Args: graphql.FieldConfigArgument{
