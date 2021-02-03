@@ -17,8 +17,8 @@ Resources:
     Properties:
       FunctionName: harmony-server-function-handler
       Runtime: go1.x
-      CodeUri: s3://harmony-server-bucket/function.zip
-      Handler: handler
+      CodeUri: s3://harmony-server-bucket/harmony-server-build.zip
+      Handler: main
       Timeout: 600
       Events:
         ApiEvent:
