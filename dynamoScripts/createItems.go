@@ -1,17 +1,12 @@
 /**
 import data from json files to the dynamoDB table
 */
-package main
+package script
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"io/ioutil"
-	"os"
 	"strconv"
 )
 
@@ -55,43 +50,4 @@ func importJSONDataFromFile(filename string, result interface{}) bool {
 		return false
 	}
 	return true
-}
-
-func main() {
-	// Initialize a session that the SDK will use to load
-	// credentials from the shared credentials file ~/.aws/credentials
-	// and region from the shared configuration file ~/.aws/config.
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-		Profile: "harmony-server",
-	}))
-
-	// Create DynamoDB client
-	svc := dynamodb.New(sess)
-
-	items := getItems()
-
-	tableName := "harmony-server-Levels"
-
-	for _, item := range items {
-		av, err := dynamodbattribute.MarshalMap(item)
-		if err != nil {
-			fmt.Println("Got error marshalling map:")
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-
-		// Create item in table Movies, item will be updated if it exists
-		input := &dynamodb.PutItemInput{
-			Item:      av,
-			TableName: aws.String(tableName),
-		}
-
-		_, err = svc.PutItem(input)
-		if err != nil {
-			fmt.Println("Got error calling PutItem:")
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-	}
 }
