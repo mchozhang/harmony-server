@@ -17,17 +17,19 @@ phases:
       - env
 
       # install dep
-      - go get -u github.com/golang/dep/cmd/dep
+#      - go get -u github.com/golang/dep/cmd/dep
+      - go get -u github.com/aws/aws-lambda-go
+      - go get -u github.com/aws/aws-sdk-go
+      - go get -u github.com/graphql-go/graphql
 
       # install dependencies
-      - dep ensure -v
+#      - dep ensure -v
   pre_build:
     commands:
       # no tests at the moment
       - echo 'prebuild phase'
   build:
     commands:
-      - ls vendor/github.com
       # Build project using AWS SAM
       - go build -o main ./handler/main.go
       # Use AWS SAM to package the application
