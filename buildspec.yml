@@ -27,7 +27,7 @@ phases:
       - echo 'prebuild phase'
   build:
     commands:
-      - pwd
+      - ls vendor/github.com
       # Build project using AWS SAM
       - go build -o main ./handler/main.go
       # Use AWS SAM to package the application
