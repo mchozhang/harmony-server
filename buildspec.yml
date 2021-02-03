@@ -28,7 +28,7 @@ phases:
       # Use AWS SAM to package the application
       - sam package -t template.yml --s3-bucket $S3_BUCKET --output-template-file template-export.yml
       # deploy the stack of lambda function
-      - sam deploy -t template.yml --stack-name harmony-server-stack --capabilities CAPABILITY_NAMED_IAM
+#       - sam deploy -t template-export.yml --stack-name harmony-server-stack --capabilities CAPABILITY_NAMED_IAM
 
 artifacts:
   type: zip
