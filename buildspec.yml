@@ -18,8 +18,8 @@ phases:
 
       # install dep
 #      - go get -u github.com/golang/dep/cmd/dep
-      - go get -u github.com/aws/aws-lambda-go
       - go get -u github.com/aws/aws-sdk-go
+      - go get -u github.com/aws/aws-lambda-go
       - go get -u github.com/graphql-go/graphql
 
       # install dependencies
