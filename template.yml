@@ -1,0 +1,46 @@
+# AWS Cloudformation template to build up the infrastructure stack of Lambda function
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda functions of the harmony server
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'OPTIONS,POST,GET'"
+      AllowHeaders: "'Content-Type, Access-Control-Allow-Origin'"
+      AllowOrigin: "'*'"
+
+Resources:
+  harmonyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: harmony-server-function-handler
+      Runtime: go1.x
+      CodeUri: s3://harmony-server-bucket/function.zip
+      Handler: handler
+      Timeout: 600
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /graphql
+            Method: post
+      Environment:
+        Variables:
+          levelTableName: harmony-server-levels
+      Policies:
+        # Give Lambda basic execution Permission to the helloFromLambda
+        - AWSLambdaBasicExecutionRole
+        - AmazonDynamoDBFullAccess
+
+#  levelTable:
+#    Type: AWS::Serverless::SimpleTable
+#    Properties:
+#      TableName: harmony-server-levels
+#      PrimaryKey:
+#        Name: level
+#        Type: Number
+#      ProvisionedThroughput:
+#        ReadCapacityUnits: 1
+#        WriteCapacityUnits: 1

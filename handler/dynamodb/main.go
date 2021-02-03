@@ -33,7 +33,7 @@ func Init() {
  */
 func GetLevel(levelId int) (interface{}, error) {
 	input := &dynamodb.GetItemInput{
-		TableName: aws.String(os.Getenv("TABLE_NAME")),
+		TableName: aws.String(os.Getenv("levelTableName")),
 		Key: map[string]*dynamodb.AttributeValue{
 			"level": {
 				N: aws.String(strconv.Itoa(levelId)),
@@ -59,8 +59,8 @@ func GetLevel(levelId int) (interface{}, error) {
 }
 
 /**
-	create a new game level to the database
- */
+create a new game level to the database
+*/
 func CreateLevel(levelInput interface{}) (interface{}, error) {
 	av, err := dynamodbattribute.MarshalMap(levelInput)
 	if err != nil {
@@ -70,8 +70,8 @@ func CreateLevel(levelInput interface{}) (interface{}, error) {
 	}
 
 	input := &dynamodb.PutItemInput{
-		Item: av,
-		TableName: aws.String(os.Getenv("TABLE_NAME")),
+		Item:      av,
+		TableName: aws.String(os.Getenv("levelTableName")),
 	}
 
 	result, err := svc.PutItem(input)
