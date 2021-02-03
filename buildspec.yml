@@ -4,6 +4,7 @@ env:
     GOOS: "linux"
     S3_BUCKET: "harmony-server-bucket"
     PACKAGE: "github.com/mchozhang/harmony-server"
+    GO114MODULE: "on"
 
 phases:
   install:
@@ -17,10 +18,7 @@ phases:
       - env
 
       # install dependencies
-      - go get -u github.com/aws/aws-sdk-go
-      - go get -u github.com/aws/aws-lambda-go/events
-      - go get -u github.com/aws/aws-lambda-go/lambda
-      - go get -u github.com/graphql-go/graphql
+      - go get ./...
 
       # install dependencies
 #      - dep ensure -v
