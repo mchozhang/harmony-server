@@ -19,7 +19,7 @@ Resources:
     Properties:
       FunctionName: harmony-server-function-handler
       Runtime: go1.x
-      # local go binary
+      # local go binary, this value will become s3 bucket uri in output template after packaging
       CodeUri: ./bin
       Handler: main
       Timeout: 600
@@ -33,17 +33,11 @@ Resources:
         Variables:
           levelTableName: harmony-server-levels
       Policies:
-        # Give Lambda basic execution Permission to the helloFromLambda
+        # Give Lambda basic execution Permission to the lambda function
         - AWSLambdaBasicExecutionRole
         - AmazonDynamoDBFullAccess
 
-#  levelTable:
-#    Type: AWS::Serverless::SimpleTable
-#    Properties:
-#      TableName: harmony-server-levels
-#      PrimaryKey:
-#        Name: level
-#        Type: Number
-#      ProvisionedThroughput:
-#        ReadCapacityUnits: 1
-#        WriteCapacityUnits: 1
+      # properties for CodeDeploy
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: AllAtOnce
