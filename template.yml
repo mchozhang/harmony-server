@@ -38,6 +38,6 @@ Resources:
         - AmazonDynamoDBFullAccess
 
       # properties for CodeDeploy
-      AutoPublishAlias: live
-      DeploymentPreference:
-        Type: AllAtOnce
+#      AutoPublishAlias: live
+#      DeploymentPreference:
+#        Type: AllAtOnce
