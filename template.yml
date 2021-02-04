@@ -36,8 +36,3 @@ Resources:
         # Give Lambda basic execution Permission to the lambda function
         - AWSLambdaBasicExecutionRole
         - AmazonDynamoDBFullAccess
-
-      # properties for CodeDeploy
-#      AutoPublishAlias: live
-#      DeploymentPreference:
-#        Type: AllAtOnce
