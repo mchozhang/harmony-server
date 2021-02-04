@@ -49,13 +49,15 @@ validate template
 sam validate -t template.yml
 ```
 
-Use SAM(Cloudformation extension) to build the entire infrastructure stack 
+Use SAM(Cloudformation extension) to build, package and deploy the entire infrastructure stack 
 ```
-sam deploy -t template.yml --stack-name harmony-server-stack --capabilities CAPABILITY_NAMED_IAM
+make
+sam package --s3-bucket harmony-server-bucket --output-template-file template-export.yml
+sam deploy -t template-export.yml --stack-name harmony-server-stack --capabilities CAPABILITY_NAMED_IAM
 ```
 
 # Test Query
-use `curl` to test sample query, it responses with grid data of level-25
+use `curl` to test sample query, and will be responsed with grid data of level-25
 ```bash
 curl --location --request POST 'https://naqmyc8sy3.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql' \
       --header 'Content-Type: application/graphql' \
