@@ -1,37 +1,12 @@
 # Harmony Server
 A GraphQL + Go + Serverless backend for the harmony game using `graphql-go/graphql`  
 
-Lambda function endpoint of GraphQL test URL:  
+Demo Lambda function endpoint, [test GraphQL queries](#test) for game data of a level:  
 https://ybpykk0p7j.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql
 
-## Project Establishment Steps
-1. prerequisite: `go`, `dep`, `serverless`, `aws-cli`, `sam`
-2. create project directory under `$gopath/src`
-3. create serverless project with `aws-go-dep` template
-```
-serverless create -t aws-go-dep -p harmony-server
-```
-4. build project
-```
-make
-```
-5. configure aws credential access key and secrete
-6. deploy
-```
-serverless deploy
-```
+The project is deployed on AWS Lambda Function using Cloudformation, CodeBuild and CodePipeline.
 
-## Development Environment
-install dependencies
-```
-# use dep
-dep ensure
-
-# or use go get
-go get ./...
-```
-
-## Build and Deploy 
+## Build and Deploy
 ### Through SAM
 prerequisite: install `aws-sam`
 #### Using CodeBuild
@@ -41,7 +16,7 @@ prerequisite: install `aws-sam`
 aws codebuild start-build --project-name harmony-server-build
 ```
 
-#### Local Method 
+#### Local Method
 Locally run `sam` to build, package and deploy the entire infrastructure stack
 ```
 # validate template
@@ -71,9 +46,34 @@ or deploy a single function(e.g. handler) when only the function has changed
 sls deploy -f handler
 ```
 
+## Project Establishment Steps
+1. prerequisite: `go`, `dep`, `serverless`, `aws-cli`, `sam`
+2. create project directory under `$gopath/src`
+3. create serverless project with `aws-go-dep` template
+```
+serverless create -t aws-go-dep -p harmony-server
+```
+4. build project
+```
+make
+```
+5. configure aws credential access key and secrete
+6. deploy
+```
+serverless deploy
+```
 
+## Development Environment
+install dependencies
+```
+# use dep
+dep ensure
 
-# Test Query
+# or use go get
+go get ./...
+```
+
+## Test
 use `curl` to test sample query, and will be responsed with grid data of level-25
 ```bash
 curl --location --request POST 'https://ybpykk0p7j.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql' \
@@ -96,4 +96,3 @@ query {
   }
 }
 ```
-
