@@ -1,6 +1,5 @@
-/**
- * domain layer, graphql of go types
- */
+// Package dynamodb
+// domain layer, graphql of go types
 package dynamodb
 
 // Level graphql

@@ -14,6 +14,7 @@ import (
 
 var svc *dynamodb.DynamoDB
 
+// Init
 // initialize the dynamodb client
 func Init() {
 	region := os.Getenv("AWS_REGION")
@@ -28,9 +29,8 @@ func Init() {
 	}
 }
 
-/**
- * get level item from dynamoDB
- */
+// GetLevel
+// get level item from dynamoDB
 func GetLevel(levelId int) (interface{}, error) {
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(os.Getenv("levelTableName")),
@@ -58,9 +58,8 @@ func GetLevel(levelId int) (interface{}, error) {
 	return level, nil
 }
 
-/**
-create a new game level to the database
-*/
+// CreateLevel
+// create a new game level to the database
 func CreateLevel(levelInput interface{}) (interface{}, error) {
 	av, err := dynamodbattribute.MarshalMap(levelInput)
 	if err != nil {

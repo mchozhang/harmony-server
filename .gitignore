@@ -24,3 +24,4 @@ vendor
 
 *.zip
 template-export.yml
+response.json

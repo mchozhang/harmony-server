@@ -74,6 +74,16 @@ go get ./...
 ```
 
 ## Test
+### Test Through Invoking Function
+use `aws cli` to invoke synchronous function
+```bash
+aws lambda invoke --function-name harmony-server-function-handler \
+                  --cli-binary-format raw-in-base64-out \
+                  --payload file://event.json response.json \
+                  && cat response.json
+```
+
+### Test Through CURL
 use `curl` to test sample query, and will be responsed with grid data of level-25
 ```bash
 curl --location --request POST 'https://ybpykk0p7j.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql' \

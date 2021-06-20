@@ -1,7 +1,6 @@
-/**
- * wrapper of graphql query and mutation executor and extractor,
- * define the graphql objects
- */
+// Package graphql
+// wrapper of graphql query and mutation executor and extractor,
+// define the graphql objects
 package graphql
 
 import (
@@ -136,20 +135,18 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 		},
 	},
 },
-
 )
 
-// GraphQL root graphql
+// GraphQL root
 var schema, _ = graphql.NewSchema(
 	graphql.SchemaConfig{
-		Query: queryType,
+		Query:    queryType,
 		Mutation: mutationType,
 	},
 )
 
-/**
- * execute the graphql query
- */
+// ExecuteQuery
+// execute the graphql query
 func ExecuteQuery(query string, variables map[string]interface{}, operationName string) *graphql.Result {
 	// parse the quest body to acquire query parameters
 	result := graphql.Do(graphql.Params{

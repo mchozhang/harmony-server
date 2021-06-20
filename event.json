@@ -1,0 +1,12 @@
+{
+  "version": "2.0",
+  "routeKey": "$default",
+  "rawPath": "/graphql",
+  "rawQueryString": "",
+  "cookies": [],
+  "headers": {
+    "Content-Type": "application/graphql"
+  },
+  "body": "{\"query\":\"query {level(id: 25) {size\\n colors\\n cells{\\n targetRow\\n steps\\n row\\n col}}}\", \"variables\":{}}",
+  "isBase64Encoded": false
+}

@@ -14,16 +14,15 @@ import (
 type Response events.APIGatewayProxyResponse
 type Request events.APIGatewayProxyRequest
 
-// request body struct of a graphql query
+// RequestBody request body struct of a graphql query
 type RequestBody struct {
 	Query         string
 	Variables     map[string]interface{}
 	OperationName string
 }
 
-/**
- * Handler is our lambda handler invoked by the `lambda.Start` function call
- */
+
+// Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, request Request) (Response, error) {
 	requestBody := RequestBody{}
 
