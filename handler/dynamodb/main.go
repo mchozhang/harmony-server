@@ -16,24 +16,15 @@ var svc *dynamodb.DynamoDB
 
 // Init
 // initialize the dynamodb client
-func Init() {
-	region := os.Getenv("AWS_REGION")
-	// Initialize a session
-	if sess, err := session.NewSession(&aws.Config{
-		Region: &region,
-	}); err != nil {
-		fmt.Println(fmt.Sprintf("Failed to initialize a session to AWS: %s", err.Error()))
-	} else {
-		// Create DynamoDB client
-		svc = dynamodb.New(sess)
-	}
+func Init(sess *session.Session) {
+	svc = dynamodb.New(sess)
 }
 
 // GetLevel
 // get level item from dynamoDB
 func GetLevel(levelId int) (interface{}, error) {
 	input := &dynamodb.GetItemInput{
-		TableName: aws.String(os.Getenv("levelTableName")),
+		TableName: aws.String(os.Getenv("TABLE_NAME")),
 		Key: map[string]*dynamodb.AttributeValue{
 			"level": {
 				N: aws.String(strconv.Itoa(levelId)),

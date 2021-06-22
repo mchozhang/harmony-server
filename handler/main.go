@@ -1,14 +1,15 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"harmony-server/handler/dynamodb"
 	"harmony-server/handler/graphql"
+	"os"
 )
 
 type Response events.APIGatewayProxyResponse
@@ -21,9 +22,8 @@ type RequestBody struct {
 	OperationName string
 }
 
-
 // Handler is our lambda handler invoked by the `lambda.Start` function call
-func Handler(ctx context.Context, request Request) (Response, error) {
+func Handler(request Request) (Response, error) {
 	requestBody := RequestBody{}
 
 	err := json.Unmarshal([]byte(request.Body), &requestBody)
@@ -48,8 +48,16 @@ func Handler(ctx context.Context, request Request) (Response, error) {
 
 // init function will be automatically invoked before main
 func init() {
-	fmt.Println("Initialize handler.")
-	dynamodb.Init()
+	// Initialize a session
+	region := os.Getenv("AWS_REGION")
+	if sess, err := session.NewSession(&aws.Config{
+		Region: &region,
+	}); err != nil {
+		fmt.Printf("Failed to initialize a session to AWS: %s\n", err.Error())
+	} else {
+		dynamodb.Init(sess)
+		fmt.Println("Initialized database client.")
+	}
 }
 
 func main() {

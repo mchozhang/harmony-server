@@ -31,7 +31,7 @@ Resources:
             Method: post
       Environment:
         Variables:
-          levelTableName: harmony-server-levels
+          TABLE_NAME: harmony-server-levels
       Policies:
         # Give Lambda basic execution Permission to the lambda function
         - AWSLambdaBasicExecutionRole

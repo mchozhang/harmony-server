@@ -73,6 +73,22 @@ dep ensure
 go get ./...
 ```
 
+## Run
+### Run Lambda Function Locally(needs docker)
+```
+# needs docker and time to build image
+sam local start-api
+
+# test in local port
+curl --location --request POST '127.0.0.1:3000/graphql' \
+      --header 'Content-Type: application/graphql' \
+      --data-raw '{"query":"query {level(id: 25) {size\n colors\n cells{\n targetRow\n steps\n row\n col}}}", "variables":{}}'
+```
+### Run unittests
+```
+AWS_REGION=ap-southeast-2 TABLE_NAME=harmony-server-levels go test -v ./handler/
+```
+
 ## Test
 ### Test Through Invoking Function
 use `aws cli` to invoke synchronous function
@@ -89,6 +105,8 @@ use `curl` to test sample query, and will be responsed with grid data of level-2
 curl --location --request POST 'https://ybpykk0p7j.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql' \
       --header 'Content-Type: application/graphql' \
       --data-raw '{"query":"query {level(id: 25) {size\n colors\n cells{\n targetRow\n steps\n row\n col}}}", "variables":{}}'
+      
+
 ```
 
 graphql query sample(get game data of level 1)
