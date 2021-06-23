@@ -86,7 +86,7 @@ curl --location --request POST '127.0.0.1:3000/graphql' \
 ```
 ### Run unittests
 ```
-AWS_REGION=ap-southeast-2 TABLE_NAME=harmony-server-levels go test -v ./handler/
+AWS_REGION=ap-southeast-2 TABLE_NAME=harmony-server-levels go test -v ./handler
 ```
 
 ## Test
