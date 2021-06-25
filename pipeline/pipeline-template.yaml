@@ -1,0 +1,229 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+
+  This template generates a generic CI/CD Pipeline for Serverless Apps that use SAM (Serverless Application Model).
+
+Parameters:
+  GithubRepo:
+    Description: Github Reposition Name
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /harmony-server/github/repo
+
+  GithubToken:
+    Description: Github OAuth Token with full permissions on admin:repo_hook and repo
+    Type: AWS::SSM::Parameter::Value<String>
+    NoEcho: true
+    Default: /harmony-server/github/token
+
+  GithubUser:
+    Description: Github username
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /harmony-server/github/user
+
+  BucketName:
+    Description: S3 bucket used throughout the pipeline
+    Type: String
+    Default: harmony-server-bucket
+
+  StackName:
+    Description: Cloudformation stack name of lambda function app
+    Type: String
+    Default: harmony-server-stack
+
+Resources:
+  # S3 bucket which store the CodeBuild Output Artifacts and CodePipeline product
+  BuildArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+
+  # CodeBuild project
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: harmony-server-build
+      Description: Build Go project
+      Artifacts:
+        Type: CodePipeline
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+      Source:
+        Type: CODEPIPELINE
+
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+
+  # CodePipeline project
+  CodePipelineProject:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: harmony-server-pipeline
+      ArtifactStore:
+        Location: !Ref BuildArtifactsBucket
+        Type: S3
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: Github
+                Version: "1"
+              Configuration:
+                Owner: !Ref GithubUser
+                Repo: !Ref GithubRepo
+                OAuthToken: !Ref GithubToken
+                Branch: master
+              OutputArtifacts:
+                - Name: SourceCodeAsZip
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: SourceCodeAsZip
+              OutputArtifacts:
+                - Name: BuildArtifactAsZip
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Ref StackName
+                TemplatePath: BuildArtifact::template-export.yml
+                Capabilities: CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+
+  # IAM roles
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+      Path: /
+      Policies:
+        - PolicyName: CodeBuildLogs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/harmony-server-build"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/harmony-server-build:*"
+        - PolicyName: CodeBuildArtifactsBucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:GetObjectVersion"
+                  - "s3:PutObject"
+                Resource:
+                  - !Sub "arn:aws:s3:::${BuildArtifactsBucket}/*"
+        - PolicyName: CodeBuildTests
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "dynamodb: GetItem"
+                  - "dynamodb: Query"
+                  - "dynamodb: PutItem"
+                Resource: "*"
+
+  CloudFormationExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Action: "sts:AssumeRole"
+          Effect: Allow
+          Principal:
+            Service: cloudformation.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AdministratorAccess"
+
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+        Path: /
+        Policies:
+          - PolicyName: CodePipelineAccess
+            PolicyDocument:
+              - Effect: Allow
+                Action:
+                  - "iam:PassRole"
+                  - "lambda:InvokeFunction"
+                  - "lambda:ListFunctions"
+                  - "lambda:InvokeAsyc"
+                Resource: "*"
+          - PolicyName: CodePipelineCodeAndArtifactsS3Bucket
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action: "s3:*"
+                  Resource: !Sub "arn:aws:s3:::${BuildArtifactsBucket}/*"
+          - PolicyName: CodePipelineCodeBuildAndCloudformationAccess
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "codebuild:StartBuild"
+                    - "codebuild:BatchGetBuilds"
+                  Resource:
+                    - !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${CodeBuildProject}"
+                - Effect: Allow
+                  Action:
+                    - "cloudformation:CreateStack"
+                    - "cloudformation:DescribeStacks"
+                    - "cloudformation:DeleteStack"
+                    - "cloudformation:UpdateStack"
+                    - "cloudformation:CreateChangeSet"
+                    - "cloudformation:ExecuteChangeSet"
+                    - "cloudformation:DeleteChangeSet"
+                    - "cloudformation:DescribeChangeSet"
+                    - "cloudformation:SetStackPolicy"
+                    - "cloudformation:SetStackPolicy"
+                    - "cloudformation:ValidateTemplate"
+                  Resource:
+                    - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${StackName}/*"
+                    - !Sub "arn:aws:cloudformation:${AWS::Region}:aws:transform/Serverless-2016-10-31"
