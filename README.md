@@ -2,7 +2,7 @@
 A GraphQL + Go + Serverless backend for the harmony game using `graphql-go/graphql`  
 
 Demo Lambda function endpoint, [test GraphQL queries](#test) for game data of a level:  
-https://ybpykk0p7j.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql
+https://udgkk5c9gf.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql/
 
 The project is deployed on AWS Lambda Function using Cloudformation, CodeBuild and CodePipeline.
 
@@ -100,13 +100,11 @@ aws lambda invoke --function-name harmony-server-function-handler \
 ```
 
 ### Test Through CURL
-use `curl` to test sample query, and will be responsed with grid data of level-25
+use `curl` to test sample query, and will be responded with grid data of level-25
 ```bash
-curl --location --request POST 'https://ybpykk0p7j.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql' \
+curl --location --request POST 'https://udgkk5c9gf.execute-api.ap-southeast-2.amazonaws.com/Prod/graphql/' \
       --header 'Content-Type: application/graphql' \
       --data-raw '{"query":"query {level(id: 25) {size\n colors\n cells{\n targetRow\n steps\n row\n col}}}", "variables":{}}'
-      
-
 ```
 
 graphql query sample(get game data of level 1)

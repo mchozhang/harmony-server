@@ -27,16 +27,21 @@ func Handler(request Request) (Response, error) {
 	requestBody := RequestBody{}
 
 	err := json.Unmarshal([]byte(request.Body), &requestBody)
+
 	if err != nil {
+		// fail to interpret GraphQl query data from the request
 		return Response{Body: err.Error(), StatusCode: 500}, err
 	}
+
 	graphResult := graphql.ExecuteQuery(requestBody.Query, requestBody.Variables, requestBody.OperationName)
 	responseJson, err := json.Marshal(graphResult)
 
 	if err != nil {
+		// fail to interpret GraphQl result
 		return Response{Body: err.Error(), StatusCode: 400}, err
 	}
 
+	// use additional headers to enable CORS
 	return Response{
 		Body:       string(responseJson),
 		StatusCode: 200, Headers: map[string]string{
@@ -47,6 +52,7 @@ func Handler(request Request) (Response, error) {
 }
 
 // init function will be automatically invoked before main
+// it only needs to run one time after the program start.
 func init() {
 	// Initialize a session
 	region := os.Getenv("AWS_REGION")

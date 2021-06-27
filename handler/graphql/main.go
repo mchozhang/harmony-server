@@ -9,7 +9,7 @@ import (
 	"harmony-server/handler/dynamodb"
 )
 
-// cell graphql
+// the schema of a Cell object
 var cellType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Cell",
@@ -29,7 +29,7 @@ var cellType = graphql.NewObject(
 		},
 	})
 
-// Level graphql
+// the schema of a Level object
 var levelType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Level",
@@ -44,12 +44,13 @@ var levelType = graphql.NewObject(
 				Type: graphql.NewList(graphql.String),
 			},
 			"cells": &graphql.Field{
-				// 2D list
+				// 2D list of cell object
 				Type: graphql.NewList(graphql.NewList(cellType)),
 			},
 		},
 	})
 
+// the schema of the input Cell object of the mutation
 var cellInputType = graphql.NewInputObject(
 	graphql.InputObjectConfig{
 		Name: "CellInput",
@@ -69,6 +70,7 @@ var cellInputType = graphql.NewInputObject(
 		},
 	})
 
+// the schema of the input Level object of the mutation
 var levelInputType = graphql.NewInputObject(
 	graphql.InputObjectConfig{
 		Name: "LevelInput",
@@ -138,6 +140,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 )
 
 // GraphQL root
+// define what queries and mutations are supported
 var schema, _ = graphql.NewSchema(
 	graphql.SchemaConfig{
 		Query:    queryType,
@@ -146,7 +149,7 @@ var schema, _ = graphql.NewSchema(
 )
 
 // ExecuteQuery
-// execute the graphql query
+// execute the graphql query or mutation to the dynamoDB
 func ExecuteQuery(query string, variables map[string]interface{}, operationName string) *graphql.Result {
 	// parse the quest body to acquire query parameters
 	result := graphql.Do(graphql.Params{
